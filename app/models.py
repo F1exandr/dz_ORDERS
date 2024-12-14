@@ -28,6 +28,7 @@ class User(UserMixin, db.Model):
     admin = sa.Column(sa.Boolean, default=False)
 
     address = db.relationship('Address', backref='address', lazy='dynamic')
+    orders = db.relationship('Orders', backref='orders', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -47,6 +48,17 @@ class Address(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
+class Catalog_add(db.Model):
+    __tablename__ = 'catalogs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'))
+    tovar_id = db.Column(db.Integer, db.ForeignKey('tovars.id'))
+
+    category = db.relationship('Categories', back_populates='catalogs')
+    tovar = db.relationship('Tovar', back_populates='catalogs')
+
+
 admin.add_view(SecureModelView(Address, db.session))
 
 
@@ -58,6 +70,7 @@ class Categories(db.Model):
     brand = sa.Column(sa.String(255))
 
     tovars = db.relationship('Tovar', back_populates='category', lazy='dynamic')
+    catalogs = db.relationship('Catalog_add', back_populates='category', lazy='dynamic')
 
 
 admin.add_view(SecureModelView(Categories, db.session))
@@ -74,6 +87,17 @@ class Tovar(db.Model):
 
     category_id = sa.Column(sa.Integer, sa.ForeignKey('categories.id'))
     category = relationship('Categories', back_populates='tovars')
+    catalogs = db.relationship('Catalog_add', back_populates='tovar', lazy='dynamic')
 
 
 admin.add_view(SecureModelView(Tovar, db.session))
+
+class  Orders(db.Model):
+    __tablename__ = 'orders'
+    id = sa.Column(sa.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    tovars = db.Column(db.Integer, db.ForeignKey('tovars.id'))
+
+
+admin.add_view(SecureModelView(Orders, db.session))
+

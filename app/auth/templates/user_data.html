@@ -3,11 +3,17 @@
     <h2> Страница пользователя </h2>
     <p>
     {{ user.name }}</p>
-    <p>{{ user.id }}</p>
+    <p>Ваш номер страницы {{ user.id }}</p>
 
     {% for i in user.address %}
         <p>{{ i.city }}</p>
         <p>{{ i.ulica }}</p>
+    {% endfor %}
+    <h2>Ваши заказы</h2>
+
+    {% for i in user.orders %}
+        <p>{{ i.id }}</p>
+        <p>{{ i.tovars }}</p>
     {% endfor %}
 
 {% endblock %}
